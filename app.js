@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
+const apiRouter = require('./routes/api');
 
 var app = express();
 
@@ -59,7 +60,10 @@ app.use('/login', loginRouter);
 app.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/"));
 });
-app.use('/', requireAuth, indexRouter);
+
+//app.use(requireAuth);
+app.use('/', indexRouter);
+app.use('/api', apiRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
