@@ -2,23 +2,18 @@
 <html>
   <head>
     <title>Login</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <%- include partials/header %>
+    <link rel='stylesheet' href='/stylesheets/login.css' />
   </head>
   <body>
-  <%- message %>
-  <h1>Login</h1>
-    <form method="post" action="<% action %>">
-      <p>
-        <label>Username:</label>
-        <input type="text" name="username">
-      </p>
-      <p>
-        <label>Password:</label>
-        <input type="text" name="password">
-      </p>
-      <p>
-        <input type="submit" value="Login">
-      </p>
-    </form>
+    <div class="login">
+      <%- message %>
+      <form class="form form__login" method="post" action="<% action %>">
+        <h1 class="form--title">BSDBook</h1>
+        <input autofocus class="form--input" type="text" name="username" placeholder="Username">
+        <input class="form--input" type="text" name="password" placeholder="Password">
+        <input class="form--submit" type="submit" value="Login">
+      </form>
+    </div>
   </body>
 </html>

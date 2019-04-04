@@ -4,10 +4,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-const loginRouter = require('./routes/login');
-const apiRouter = require('./routes/api');
-
 var app = express();
 
 const session = require('express-session');
@@ -26,6 +22,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(require('less-middleware')(__dirname + '/public'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const requireAuth = (req, res, next) => {
@@ -56,14 +53,14 @@ app.use(function(req, res, next){
   next();
 });
 
-app.use('/login', loginRouter);
+app.use('/login', require('./routes/login'));
 app.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/"));
 });
 
 //app.use(requireAuth);
-app.use('/', indexRouter);
-app.use('/api', apiRouter);
+app.use('/', require('./routes/index'));
+app.use('/api', require('./routes/api'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

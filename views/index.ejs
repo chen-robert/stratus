@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>Welcome <%= title %></title>
+    <%- include partials/header %>
+    <link rel='stylesheet' href='/stylesheets/main.css' />
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <%- include partials/nav %>
+    <div class="main">
+      <h1 class="main--welcome">Welcome, <%= title %></h1>
+      <div class="class-list">
+        <div class="class-list--class">
+          asdf
+        </div>
+      </div>
+    </div>
   </body>
 </html>
