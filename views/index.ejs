@@ -10,9 +10,22 @@
     <div class="main">
       <h1 class="main--welcome">Welcome, <%= title %></h1>
       <div class="class-list">
-        <div class="class-list--class">
-          asdf
-        </div>
+      
+        <% for(var i=0; i < 7; i++) { %>
+          <a class="class" href="/class">
+            <div class="class--main">
+              <div class="class--title">
+                asdf-<%= Math.pow(5, i) %>
+              </div>
+              <div class="class--subtitle">
+                34.5%
+              </div>
+            </div>
+            <div class="class--side">
+              B
+            </div>
+          </a>
+        <% } %>
       </div>
     </div>
   </body>
