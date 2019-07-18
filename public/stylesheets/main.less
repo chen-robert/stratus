@@ -30,12 +30,13 @@
   
   width: 40%;
   max-width: 350px;
-  box-shadow: 0.2rem 0.8rem 1.6rem rgba(0, 0, 0, 0.3);
+
+  transition-duration: @animation-duration;
+  cursor: pointer;
   
   &:hover{
-    cursor: pointer;
-    box-shadow: 0.2rem 0.8rem 1.6rem rgba(0, 0, 0, 0.2);
-    background-color: darken(@background-color, 5%);
+    box-shadow: 0px 10px 8px #888888;
+    transform: translateY(-2px);
   }
   
   color: inherit;

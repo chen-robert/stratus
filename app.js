@@ -1,27 +1,28 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+
+const PORT = process.env.PORT || 3000;
+
+const cookieSession = require("cookie-session");
 
 var app = express();
 
-const session = require('express-session');
 // Sessions
-app.use(session({
-  secret: process.env.SECRET || 'cas-project ihs',
-  resave: false,
-  saveUninitialized: true
-}))
+app.use(
+  cookieSession({
+    name: "session",
+    keys: [process.env.SECRET || "lorem ipsum"],
+    maxAge: 24 * 60 * 60 * 1000
+  })
+);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
-app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+
 app.use(require('less-middleware')(__dirname + '/public'));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -47,6 +48,7 @@ app.use(function(req, res, next){
   var msg = req.session.success;
   delete req.session.error;
   delete req.session.success;
+
   res.locals.message = '';
   if (err) res.locals.message = '<p class="msg error">' + escapeHTML(err) + '</p>';
   if (msg) res.locals.message = '<p class="msg success">' + escapeHTML(msg) + '</p>';
@@ -55,27 +57,11 @@ app.use(function(req, res, next){
 
 app.use('/login', require('./routes/login'));
 app.get("/logout", (req, res) => {
-  req.session.destroy(() => res.redirect("/"));
+  req.session = null;
+  res.redirect("/");
 });
 
-//app.use(requireAuth);
+app.use(requireAuth);
 app.use('/', require('./routes/index'));
-app.use('/api', require('./routes/api'));
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-module.exports = app;
+app.listen(PORT, () => console.log(`Started server at port ${PORT}`));
