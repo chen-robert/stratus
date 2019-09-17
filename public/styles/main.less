@@ -25,17 +25,18 @@
   
   padding: 10px 20px;
   margin: 15px 25%;
-  background-color: @background-color;
+  background-color: darken(@background-color, 5%);
   align-items: center;
   
   width: 40%;
-  max-width: 350px;
+  max-width: 750px;
 
   transition-duration: @animation-duration;
   cursor: pointer;
   
+  box-shadow: 0px 5px 8px #888888;
   &:hover{
-    box-shadow: 0px 10px 8px #888888;
+    box-shadow: none;
     transform: translateY(-2px);
   }
   
