@@ -10,19 +10,18 @@
     <div class="main">
       <h1 class="main--welcome">Welcome, <%= title %></h1>
       <div class="class-list">
-      
-        <% for(var i=0; i < 7; i++) { %>
+        <% for(const subject of classes) { %>
           <a class="class" href="/class">
             <div class="class--main">
               <div class="class--title">
-                asdf-<%= Math.pow(5, i) %>
+                <%= subject.name %>
               </div>
               <div class="class--subtitle">
-                34.5%
+                <%= subject.numberGrade %>
               </div>
             </div>
             <div class="class--side">
-              B
+              <%= subject.letterGrade %>
             </div>
           </a>
         <% } %>
