@@ -3,12 +3,12 @@
   <head>
     <title>Login</title>
     <%- include partials/header %>
-    <link rel='stylesheet' href='/stylesheets/login.css' />
+    <link rel='stylesheet' href='/styles/login.css' />
   </head>
   <body>
     <div class="login">
       <%- message %>
-      <form class="form form__login" method="post" action="<% action %>">
+      <form class="form form__login" method="post" action="/login">
         <h1 class="form--title">BSDBook</h1>
         <input autofocus class="form--input" type="text" name="username" placeholder="Username">
         <input class="form--input" type="text" name="password" placeholder="Password">

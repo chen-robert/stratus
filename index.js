@@ -2,12 +2,12 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
+const session = require("express-session")
 
 const PORT = 3000 || process.env.PORT;
 
 var app = express();
 
-const session = require('express-session');
 // Sessions
 app.use(session({
   name: "session",
@@ -47,6 +47,7 @@ app.use(function(req, res, next){
   var msg = req.session.success;
   delete req.session.error;
   delete req.session.success;
+
   res.locals.message = '';
   if (err) res.locals.message = '<p class="msg error">' + escapeHTML(err) + '</p>';
   if (msg) res.locals.message = '<p class="msg success">' + escapeHTML(msg) + '</p>';
@@ -55,7 +56,8 @@ app.use(function(req, res, next){
 
 app.use('/login', require('./server/routes/login'));
 app.get("/logout", (req, res) => {
-  req.session.destroy(() => res.redirect("/"));
+  req.session = null;
+  res.redirect("/");
 });
 
 app.use(requireAuth);
