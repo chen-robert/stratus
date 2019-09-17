@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Login</title>
+    <title><%= title %></title>
     <%- include partials/header %>
-    <link rel='stylesheet' href='/stylesheets/class.css' />
-    <link rel='stylesheet' href='/stylesheets/main.css' />
+    <link rel='stylesheet' href='/styles/class.css' />
+    <link rel='stylesheet' href='/styles/main.css' />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
   </head>
   <body>
@@ -15,6 +15,8 @@
         <canvas id="class-data" height="25" width="100"></canvas>
       </div>
       <script>
+      const weights = <%- JSON.stringify(weights) %>;
+
 var ctx = document.getElementById('class-data').getContext('2d');
 var data = {
     labels: ["Assignments", "Tests"],

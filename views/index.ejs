@@ -11,7 +11,7 @@
       <h1 class="main--welcome">Welcome, <%= title %></h1>
       <div class="class-list">
         <% for(const subject of classes) { %>
-          <a class="class" href="/class">
+          <a class="class" href="/class/<%= subject.id %>">
             <div class="class--main">
               <div class="class--title">
                 <%= subject.name %>

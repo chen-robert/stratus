@@ -11,7 +11,7 @@ const login = (username, password) => {
         return {
           id: c.classId,
           letterGrade: c.letterGrade,
-          name: c.name,
+          name: c.name.split(":")[1].replace("S1", "").replace("S2", ""),
           numberGrade: c.numberGrade,
           teacher: c.teacher
         }
@@ -22,4 +22,19 @@ const login = (username, password) => {
   });
 }
 
-module.exports = {login};
+const classData = id => {
+  return new Promise(resolve => {
+    const weightData = JSON.parse(`{"Class Assignments and Projects": {"percentage": 40.0}, "Final": {"percentage": 10.0}, "Professionalism": {"percentage": 15.0}, "Quizzes and Tests": {"percentage": 35.0}, "TOTAL": {"percentage": 100.0}}
+    `);
+
+    const weights = {};
+    
+    Object.keys(weightData)
+      .forEach(category => {
+        weights[category] = weightData[category].percentage;
+      });
+    resolve({weights})
+  });
+}
+
+module.exports = {login, classData};
