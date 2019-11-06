@@ -1,51 +1,100 @@
-const request = require("request");
-const apiBase = "https://bsd405.herokuapp.com";
+const cheerio = require("cheerio");
+const request = require("request-promise");
 
-const login = (username, password) => {
-  return new Promise(resolve => {
-    request.post({
-      url: `${apiBase}/login`,
-      formData: { username, password }
-    },
-    (err, res, body) => {
-      if (res.statusCode !== 200) return resolve({ err: "Invalid username or password" });
-      const data = JSON.parse(body);
-      const classes = data.students
-        .map((c, i) => {
-          c = c[i];
-          return {
-            id: c.classId,
-            letterGrade: c.letterGrade,
-            name: c.name.split(":")[1].replace("S1", "").replace("S2", ""),
-            numberGrade: c.numberGrade,
-            teacher: c.teacher
-          };
-        });
-      const name = data.name;
+const apiBase = "https://wa-bsd405-psv.edupoint.com";
 
-      resolve({ classes, name });
+const loadJar = cookies => {
+  const jar = request.jar();
+  cookies.forEach(({key, value}) => jar.setCookie(`${key}=${value}`, apiBase));
+
+  return jar;
+}
+
+const saveJar = jar => jar.getCookies(apiBase);
+
+const login = ({username, password}) => {
+  const loginEndpoint = `${apiBase}/PXP2_Login_Student.aspx?regenerateSessionId=True`;
+  
+  const jar = request.jar();
+  return request.get({
+    url: loginEndpoint,
+    transform: body => cheerio.load(body)
+  })
+  .then($ => {
+    const data = {
+      "__VIEWSTATE": $(`input[name=__VIEWSTATE]`).val(),
+      "__VIEWSTATEGENERATOR": $(`input[name=__VIEWSTATEGENERATOR]`).val(),
+      "__EVENTVALIDATION": $(`input[name=__EVENTVALIDATION]`).val(),
+      "ctl00$MainContent$username": username,
+      "ctl00$MainContent$password": password
+    }
+
+    return request.post({
+      url: loginEndpoint,
+      form: data,
+      followAllRedirects: true,
+      transform: body => cheerio.load(body),
+      jar
     });
+  })
+  .then($ => {
+    if($.text().includes("Invalid user id or password")) throw new Error("Invalid credentials");
+
+    const name = $("#Greeting").text().split(",")[1].trim();
+    const gradebookPage = $(`.list-group-item[href*='Gradebook.aspx']`).attr("href");
+    
+    return { 
+      name ,
+      cookies: jar.getCookies(apiBase)
+    }
+  })
+  .catch(() => {
+    return {
+      err: "Invalid username or password"
+    }
   });
-};
+}
 
-const classData = id => {
-  return new Promise(resolve => {
-    request.post({
-      url: `${apiBase}/get_weight`,
-      formData: { id: 26292 }
-    },
-    (err, res, body) => {
-      console.log(body);
-      const data = JSON.parse(body);
-      const weights = {};
+const getCourses = cookies => {
+  const jar = loadJar(cookies);
+  console.log(jar)
 
-      Object.keys(data)
-        .forEach(category => {
-          weights[category] = weightData[category].percentage;
-        });
-      resolve({ weights });
-    });
+  return request.get({
+    url: `${apiBase}/PXP2_Gradebook.aspx?AGU=0`,
+    transform: body => cheerio.load(body),
+    jar
+  })
+  .then($ => {
+    const courses = $(".course-title");
+  
+    const cData = courses.map((i, elem) => {
+      const $elem = $(elem);
+      const $root = $elem.parent().parent();
+      const $gradeRoot = $root.next();
+
+      const focusData = JSON.parse($elem.attr("data-focus")).FocusArgs;
+
+      const id = focusData.classID;
+      const teacher = $root.find(".teacher.hide-for-screen").text();
+      const name = $elem.text();
+      const numberGrade = $gradeRoot.find(".score").text();
+      const letterGrade = $gradeRoot.find(".mark").text();
+
+      return {
+        id,
+        teacher,
+        name,
+        numberGrade,
+        letterGrade
+      }
+    }).get();
+    
+    return {
+      a: 3,
+      courses: cData
+    };
   });
-};
+}
 
-module.exports = { login, classData };
+
+module.exports = { login, getCourses };

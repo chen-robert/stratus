@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Welcome <%= title %></title>
+    <title>Welcome <%= name %></title>
     <%- include partials/header %>
     <link rel='stylesheet' href='/styles/main.css' />
   </head>
   <body>
     <%- include partials/nav %>
     <div class="main">
-      <h1 class="main--welcome">Welcome, <%= title %></h1>
+      <h1 class="main--welcome">Welcome, <%= name %></h1>
       <div class="class-list">
-        <% for(const subject of classes) { %>
+        <% for(const subject of courses) { %>
           <a class="class" href="/class/<%= subject.id %>">
             <div class="class--main">
               <div class="class--title">

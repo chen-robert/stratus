@@ -1,15 +1,13 @@
-var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
-var logger = require("morgan");
-const session = require("express-session");
+const cookieSession = require("cookie-session");
 
 const PORT = 3000 || process.env.PORT;
 
-var app = express();
+const app = express();
 
 // Sessions
-app.use(session({
+app.use(cookieSession({
   name: "session",
   secret: process.env.SECRET || "cas-project ihs",
   resave: false,
@@ -20,7 +18,6 @@ app.use(session({
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-app.use(logger(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(express.urlencoded({ extended: false }));
 app.use(require("less-middleware")(__dirname + "/public"));
 app.use(express.static(path.join(__dirname, "public")));

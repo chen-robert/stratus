@@ -8,14 +8,18 @@ router.get("/", function (req, res, next) {
 });
 
 router.post("/", async (req, res) => {
-  const { err, name, classes } = await login(req.body.username, req.body.password);
+  const { err, name, cookies } = await login({
+    username: req.body.username, 
+    password: req.body.password
+  });
 
   if (err) {
     req.session.error = err;
     return res.redirect("back");
   }
   req.session.username = name;
-  req.session.classes = classes;
+  req.session.cookies = cookies;
+  console.log(cookies)
 
   res.redirect("/");
 });

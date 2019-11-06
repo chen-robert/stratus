@@ -1,10 +1,10 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
+const { getCourses } = require("../api.js");
 
-const { classData } = require("../api.js");
-
-router.get("/", (req, res, next) => {
-  res.render("index", { title: req.session.username, classes: req.session.classes });
+router.get("/", async (req, res, next) => {
+  const { courses } = await getCourses(req.session.cookies);
+  res.render("index", { name: req.session.username, courses });
 });
 
 router.get("/class/:id", async (req, res) => {
