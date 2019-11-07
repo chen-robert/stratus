@@ -19,7 +19,6 @@ router.post("/", async (req, res) => {
   }
   req.session.username = name;
   req.session.cookies = cookies;
-  console.log(cookies)
 
   res.redirect("/");
 });

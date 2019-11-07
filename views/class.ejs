@@ -5,52 +5,101 @@
     <%- include partials/header %>
     <link rel='stylesheet' href='/styles/class.css' />
     <link rel='stylesheet' href='/styles/main.css' />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous">
+    </script>
   </head>
   <body>
     <%- include partials/nav %>
     <div class="main">
       <h1 class="main--welcome"><%= title %></h1>
-      <div class="chart-container">
-        <canvas id="class-data" height="25" width="100"></canvas>
-      </div>
+      <div id="chart" style="height: 370px; width: 100%;"></div>
       <script>
-      const weights = <%- JSON.stringify(weights) %>;
+      const weights = <%- JSON.stringify(weights) %> || [];
+      const assignments = <%- JSON.stringify(assignments) %>;
+      
+      const buildAssignments = () => {
+        const $root = $("#tbody");
 
-var ctx = document.getElementById('class-data').getContext('2d');
-var data = {
-    labels: ["Assignments", "Tests"],
-    datasets: [
-        {
-            label: "Score",
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            data: [25, 32]
+        assignments.forEach(({ name, category, score, total }) => {
+          const ungraded = score === null;
+
+          $root.append(`
+            <tr>
+              <td>${name}</td>
+              <td>${category}</td>
+              <td>
+                <input type="number" value=${score}>
+              </td>
+              <td>${total}</td>
+            </tr>
+          `);
+        });
+      }
+      $(buildAssignments);
+
+      const sum = (a, b) => a + b
+      const calculateTotal = () => {
+        if(weights.length === 0) {
+          return 100 * assignments.map(a => a.score).reduce(sum)
+            / assignments.map(a => a.total).reduce(sum);
+        }
+
+        const totalScored = weights
+          .filter(weight => weight.current !== 0)
+          .map(weight => weight.total)
+          .reduce(sum)
+
+        return weights
+          .map(weight => weight.current)
+          .reduce(sum) / totalScored * 100;
+      }
+
+      const getPoints = () => {
+        const defaults = {
+          type: "bar",
+          showInLegend: true
+        }
+
+        const reals = {
+          ...defaults,
+          name: "Current Grade",
+          color: "#60a69f",
+          dataPoints: weights
+            .map(weight => ({
+              y: weight.current,
+              label: weight.name
+            }))
+            .concat({ y: calculateTotal(), label: "Total" })
+        }
+
+        const totals = {
+          ...defaults,
+          name: "% of Grade",
+          color: "#78b6d9",
+          dataPoints: weights
+            .map(weight => ({
+              y: weight.total,
+              label: weight.name
+            }))
+            .concat({ y: 100, label: "Total" })
+        }
+
+        return [reals, totals];
+      }
+
+      const chart = new CanvasJS.Chart("chart", {
+        animationEnabled: true,
+        axisY: {
+          title: "%"
         },
-        {
-            label: "Possible",
-            backgroundColor: "rgba(54, 162, 235, 0.2)",
-            data: [30, 70]
-        }
-    ]
-};
-var myChart = new Chart(ctx, {
-    type: 'bar',
-    data: data,
-    options: {
-        scales: {
-            xAxes: [{
-              barThickness: 100
-            }],
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true,
-                    max: 100,
-                    stepsize: 10
-                }
-            }]
-        }
-    }
-});
+        data: getPoints()
+      });
+
+      chart.render();
 </script>
       
       <table class="assignments">
@@ -60,19 +109,7 @@ var myChart = new Chart(ctx, {
           <th>Points Earned</th>
           <th>Points Possible</th>
         </thead>
-        <tbody>
-        <% for(var i=0; i < 7; i++) { %>
-          <tr>
-            <td>Assignment <%= i %></td>
-            <td>Assignments</td>
-            <td>
-              <input type="number">
-            </td>
-            <td>
-              <input  type="number">
-            </td>
-          </tr>
-        <% } %>
+        <tbody id="tbody">
         </tbody>
         
       </table>

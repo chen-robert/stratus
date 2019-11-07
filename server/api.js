@@ -75,7 +75,7 @@ const getCourses = cookies => {
 
       const id = focusData.classID;
       const teacher = $root.find(".teacher.hide-for-screen").text();
-      const name = $elem.text();
+      const name = $elem.text().split(":")[1].trim();
       const numberGrade = $gradeRoot.find(".score").text();
       const letterGrade = $gradeRoot.find(".mark").text();
 
@@ -116,7 +116,7 @@ const getCourseData = (cookies, id) => {
       .get()
       .filter(({args}) => args.classID == id )
       [0];
-    ret.name = data.name;
+    ret.name = data.name.split(":")[1].trim();
 
     return request.post({
       url: `${apiBase}/service/PXP2Communication.asmx/LoadControl`,
@@ -132,15 +132,20 @@ const getCourseData = (cookies, id) => {
     })
   })
   .then($ => {
-    const weights = JSON.parse($(".CategoryWeights").attr("data-data-source"))
-      .map(weight => {
-        return {
-          name: weight.Category,
-          current: weight.CurrentGrade,
-          total: weight.PctOfGrade
-        }
-      })
-      .filter(name => name !== "TOTAL");
+    let weights = null;
+    
+    const weightJSON = $(".CategoryWeights").attr("data-data-source");
+    if(weightJSON !== undefined) {
+      weights = JSON.parse(weightJSON)
+        .map(weight => {
+          return {
+            name: weight.Category,
+            current: weight.CurrentGrade,
+            total: weight.PctOfGrade
+          }
+        })
+        .filter(({name}) => name !== "TOTAL");
+    }
     
     const txt = $.html();
 
@@ -151,11 +156,20 @@ const getCourseData = (cookies, id) => {
 
     const assignments = JSON.parse(txt.substring(dataStart, dataEnd) + "}]")
       .map(assignmentData => {
+        let score, total;
+
+        if(assignmentData.GBPoints.includes("Points Possible")) {
+          score = null;
+          total = +assignmentData.GBPoints.split(" ")[0];
+        } else {
+          score = +assignmentData.GBPoints.split("/")[0];
+          total = +assignmentData.GBPoints.split("/")[1];
+        }
         return {
           name: JSON.parse(assignmentData.GBAssignment).value,
           category: assignmentData.GBAssignmentType,
-          score: JSON.parse(assignmentData.GBScore).value,
-          total: assignmentData.GBPoints,
+          score,
+          total,
           scoreType: assignmentData.GBScoreType,
           notes: assignmentData.GBNotes
         }
@@ -167,7 +181,8 @@ const getCourseData = (cookies, id) => {
       assignments 
     };
   })
-  .catch(() => {
+  .catch((e) => {
+  console.log(e)
     return {
       err: "Invalid session"
     }
