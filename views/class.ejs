@@ -19,8 +19,8 @@
       <div class="main--header">
         <div class="header--grade">
           <div class="header--title">
-            <p id="letterGrade">A<p>
-            <p id="numberGrade" class="header--subtitle">93%</p>
+            <p id="letterGrade"><p>
+            <p id="numberGrade" class="header--subtitle"></p>
           </div>
         </div>
         <div id="chart" style="height: 370px; width: 100%;"></div>
@@ -147,7 +147,7 @@
         data: []
       });
       const remakeChart = () => {
-        const numberGrade = Math.floor(calculateTotal());
+        const numberGrade = Math.floor(calculateTotal() * 100) / 100;
         const letterGrade = "FFFFFFDCBA"[Math.floor(numberGrade / 10)];  
 
         $("#numberGrade").text(`${numberGrade}%`);
