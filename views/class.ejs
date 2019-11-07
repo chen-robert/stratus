@@ -16,18 +16,57 @@
     <%- include partials/nav %>
     <div class="main">
       <h1 class="main--welcome"><%= title %></h1>
-      <div id="chart" style="height: 370px; width: 100%;"></div>
+      <div class="main--header">
+        <div class="header--grade">
+          <div class="header--title">
+            <p id="letterGrade">A<p>
+            <p id="numberGrade" class="header--subtitle">93%</p>
+          </div>
+        </div>
+        <div id="chart" style="height: 370px; width: 100%;"></div>
+      </div>
+      <table class="assignments">
+        <thead>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Points Earned</th>
+          <th>Points Possible</th>
+        </thead>
+        <tbody id="tbody">
+        </tbody>
+        
+      </table>
       <script>
       const weights = <%- JSON.stringify(weights) %> || [];
+      const weighted = <%= weights !== null %>;
       const assignments = <%- JSON.stringify(assignments) %>;
       
+      const recalcWeights = () => {
+        const lp = {};
+
+        assignments.forEach(({category, score, total}) => {
+          if(!lp[category]) lp[category] = { score: 0, total: 0 };
+          
+          if(score === null) return;
+
+          lp[category].score += score;
+          lp[category].total += total;
+        });
+
+        weights.forEach(weight => {
+          const data = lp[weight.name];
+          if(data) weight.current = data.score / data.total * weight.total;
+        });
+      }
+
       const buildAssignments = () => {
         const $root = $("#tbody");
 
-        assignments.forEach(({ name, category, score, total }) => {
+        assignments.forEach(assignment => {
+          const { name, category, score, total } = assignment;
           const ungraded = score === null;
 
-          $root.append(`
+          $row = $(`
             <tr>
               <td>${name}</td>
               <td>${category}</td>
@@ -37,6 +76,14 @@
               <td>${total}</td>
             </tr>
           `);
+
+          $root.append($row);
+          $row.find("input").on("change", function() {
+            assignment.score = +$(this).val();
+            
+            if(weighted) recalcWeights();
+            remakeChart();
+          });
         });
       }
       $(buildAssignments);
@@ -44,8 +91,9 @@
       const sum = (a, b) => a + b
       const calculateTotal = () => {
         if(weights.length === 0) {
-          return 100 * assignments.map(a => a.score).reduce(sum)
-            / assignments.map(a => a.total).reduce(sum);
+          const filtered = assignments.filter(a => a.score !== null);
+          return 100 * filtered.map(a => a.score).reduce(sum)
+            / filtered.map(a => a.total).reduce(sum);
         }
 
         const totalScored = weights
@@ -90,29 +138,27 @@
 
         return [reals, totals];
       }
-
+      
       const chart = new CanvasJS.Chart("chart", {
         animationEnabled: true,
         axisY: {
           title: "%"
         },
-        data: getPoints()
+        data: []
       });
+      const remakeChart = () => {
+        const numberGrade = Math.floor(calculateTotal());
+        const letterGrade = "FFFFFFDCBA"[Math.floor(numberGrade / 10)];  
 
-      chart.render();
-</script>
+        $("#numberGrade").text(`${numberGrade}%`);
+        $("#letterGrade").text(letterGrade);
+
+        chart.options.data = getPoints();
+        chart.render();
+      }
+      $(remakeChart);
+      </script>
       
-      <table class="assignments">
-        <thead>
-          <th>Name</th>
-          <th>Category</th>
-          <th>Points Earned</th>
-          <th>Points Possible</th>
-        </thead>
-        <tbody id="tbody">
-        </tbody>
-        
-      </table>
     </div>
 
     </div>
