@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getCourses } = require("../api.js");
+const { getCourses, getCourseData } = require("../api.js");
 
 router.get("/", async (req, res, next) => {
   const { courses } = await getCourses(req.session.cookies);
@@ -8,12 +8,11 @@ router.get("/", async (req, res, next) => {
 });
 
 router.get("/class/:id", async (req, res) => {
-  const { weights } = await classData(req.params.id);
+  const { err, name, weights, assignments } = await getCourseData(req.session.cookies, req.params.id);
+  
+  if(err) return res.redirect("/login");
 
-  const curr = req.session.classes.filter(({ id }) => id === req.params.id);
-  if (curr.length !== 1) return res.status(404).end();
-
-  res.render("class", { title: curr[0].name, weights });
+  res.render("class", { title: name, weights, assignments });
 });
 
 module.exports = router;

@@ -57,7 +57,6 @@ const login = ({username, password}) => {
 
 const getCourses = cookies => {
   const jar = loadJar(cookies);
-  console.log(jar)
 
   return request.get({
     url: `${apiBase}/PXP2_Gradebook.aspx?AGU=0`,
@@ -90,11 +89,90 @@ const getCourses = cookies => {
     }).get();
     
     return {
-      a: 3,
       courses: cData
     };
   });
 }
 
+const getCourseData = (cookies, id) => {
+  const jar = loadJar(cookies);
 
-module.exports = { login, getCourses };
+  const ret = {};
+  return request.get({
+    url: `${apiBase}/PXP2_Gradebook.aspx?AGU=0`,
+    transform: body => cheerio.load(body),
+    jar
+  })
+  .then($ => {
+    const courses = $(".course-title");
+  
+    const data = courses
+      .map((i, elem) => {
+        return {
+          args: JSON.parse($(elem).attr("data-focus")).FocusArgs,
+          name: $(elem).text() 
+        };
+      })
+      .get()
+      .filter(({args}) => args.classID == id )
+      [0];
+    ret.name = data.name;
+
+    return request.post({
+      url: `${apiBase}/service/PXP2Communication.asmx/LoadControl`,
+      body: {
+        request: {
+          control: "Gradebook_ClassDetails",
+          parameters: data.args
+        }
+      },
+      json: true,
+      transform: resp => cheerio.load(resp.d.Data.html),
+      jar
+    })
+  })
+  .then($ => {
+    const weights = JSON.parse($(".CategoryWeights").attr("data-data-source"))
+      .map(weight => {
+        return {
+          name: weight.Category,
+          current: weight.CurrentGrade,
+          total: weight.PctOfGrade
+        }
+      })
+      .filter(name => name !== "TOTAL");
+    
+    const txt = $.html();
+
+    const startStr = `"dataSource":`;
+    const endStr = "}],";
+    const dataStart = txt.indexOf(startStr) + startStr.length;
+    const dataEnd = txt.indexOf(endStr, dataStart);
+
+    const assignments = JSON.parse(txt.substring(dataStart, dataEnd) + "}]")
+      .map(assignmentData => {
+        return {
+          name: JSON.parse(assignmentData.GBAssignment).value,
+          category: assignmentData.GBAssignmentType,
+          score: JSON.parse(assignmentData.GBScore).value,
+          total: assignmentData.GBPoints,
+          scoreType: assignmentData.GBScoreType,
+          notes: assignmentData.GBNotes
+        }
+      });
+    
+    return { 
+      name: ret.name, 
+      weights, 
+      assignments 
+    };
+  })
+  .catch(() => {
+    return {
+      err: "Invalid session"
+    }
+  });
+
+}
+
+module.exports = { login, getCourses, getCourseData };
