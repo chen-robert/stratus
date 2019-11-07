@@ -11,10 +11,30 @@
 
 .assignments{
   width: 100%;
-  
-  & td{
-    text-align: center;
+  max-width: 1000px;
+  & td {
+    padding: 5px 15px;
   }
+
+  & th{
+    font-size: 1.1em;
+    font-weight: 500;
+    padding: 20px;
+  }
+
+  & tbody td:nth-child(4){
+    text-align: right;
+  }
+
+  & input {
+    width: 100%;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1em;
+    padding: 3px;
+  }
+
+  margin-bottom: 50px;
 }
 
 .main--header {
@@ -25,10 +45,14 @@
 
 .header--grade {
   font-size: 5em;
-  width: 20%;
+  padding: 50px;
 
   display: flex;
   align-items: center;
+
+  & p {
+    margin: 0;
+  }
 }
 
 .header--title {
@@ -45,4 +69,8 @@
 
 #chart {
   flex: 1;
+}
+
+.canvasjs-chart-credit {
+  display: none !important;
 }

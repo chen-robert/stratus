@@ -41,7 +41,6 @@ const login = ({ username, password }) => {
       if ($.text().includes("Invalid user id or password")) throw new Error("Invalid credentials");
 
       const name = $("#Greeting").text().split(",")[1].trim();
-      const gradebookPage = $(".list-group-item[href*='Gradebook.aspx']").attr("href");
 
       return {
         name,

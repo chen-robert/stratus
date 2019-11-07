@@ -17,14 +17,15 @@
     <div class="main">
       <h1 class="main--welcome"><%= title %></h1>
       <div class="main--header">
+        <div id="chart" style="height: 370px; width: 100%;"></div>
         <div class="header--grade">
           <div class="header--title">
-            <p id="letterGrade"><p>
+            <p id="letterGrade"></p>
             <p id="numberGrade" class="header--subtitle"></p>
           </div>
         </div>
-        <div id="chart" style="height: 370px; width: 100%;"></div>
       </div>
+      <hr style="width: 20%; margin: 50px 40%;">
       <table class="assignments">
         <thead>
           <th>Name</th>
@@ -141,16 +142,13 @@
       
       const chart = new CanvasJS.Chart("chart", {
         animationEnabled: true,
-        axisY: {
-          title: "%"
-        },
         data: []
       });
       const remakeChart = () => {
         const numberGrade = Math.floor(calculateTotal() * 100) / 100;
         const letterGrade = "FFFFFFDCBA"[Math.floor(numberGrade / 10)];  
 
-        $("#numberGrade").text(`${numberGrade}%`);
+        $("#numberGrade").text(`${numberGrade.toFixed(2)}%`);
         $("#letterGrade").text(letterGrade);
 
         chart.options.data = getPoints();
