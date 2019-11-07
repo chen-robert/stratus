@@ -9,8 +9,8 @@ router.get("/", async (req, res, next) => {
 
 router.get("/class/:id", async (req, res) => {
   const { err, name, weights, assignments } = await getCourseData(req.session.cookies, req.params.id);
-  
-  if(err) return res.redirect("/login");
+
+  if (err) return res.redirect("/login");
 
   res.render("class", { title: name, weights, assignments });
 });

@@ -9,7 +9,7 @@ router.get("/", function (req, res, next) {
 
 router.post("/", async (req, res) => {
   const { err, name, cookies } = await login({
-    username: req.body.username, 
+    username: req.body.username,
     password: req.body.password
   });
 
