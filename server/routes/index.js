@@ -4,6 +4,9 @@ const { getCourses, getCourseData } = require("../api.js");
 
 router.get("/", async (req, res, next) => {
   const { courses } = await getCourses(req.session.cookies);
+
+  if(courses.length === 0) return res.redirect("/login");
+
   res.render("index", { name: req.session.username, courses });
 });
 
