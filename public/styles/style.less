@@ -45,6 +45,14 @@
 .msg{
   position: absolute;
   top: 25px;
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 3px;
+  color: white;
+  animation: fadeOut 3s .5s forwards;
+  &.error {
+    background-color: rgba(255, 150, 150, 1);
+  }
 }
 
 body{
@@ -55,3 +63,8 @@ body{
   box-sizing: border-box;
   font-family: 'Nunito', sans-serif;
 }
+
+@keyframes fadeOut {
+  0% {opacity: 1;}
+  100% {opacity: 0;} 
+} 
