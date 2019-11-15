@@ -10,7 +10,7 @@ const loadJar = cookies => {
   return jar;
 };
 
-const saveJar = jar => jar.getCookies(apiBase);
+const saveJar = jar => jar.getCookies(apiBase).map(({key, value}) => ({key, value}));
 
 const login = ({ username, password }) => {
   const loginEndpoint = `${apiBase}/PXP2_Login_Student.aspx?regenerateSessionId=True`;
