@@ -17,3 +17,5 @@ function decrypt (text) {
   decrypted = Buffer.concat([decrypted, decipher.final()]);
   return decrypted.toString();
 }
+
+module.exports = { encrypt, decrypt };
