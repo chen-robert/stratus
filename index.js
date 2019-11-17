@@ -11,7 +11,8 @@ app.use(cookieSession({
   name: "session",
   secret: process.env.SECRET || "cas-project ihs",
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  maxAge: 100 * 365 * 24 * 60 * 60 * 1000
 }));
 
 // view engine setup
