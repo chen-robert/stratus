@@ -26,6 +26,22 @@
         </div>
       </div>
       <hr style="width: 20%; margin: 50px 40%;">
+      <div id="creation">
+        <div class="form">
+          <select class="form--input form--input__slim">
+          </select>
+          <div class="form-group">
+            Points Earned: 
+            <input class="form--input form--input__slim" id="earned" type="number" min=0 value=0></input>
+          </div>
+          <div class="form-group">
+            Points Possible: 
+            <input class="form--input form--input__slim" id="possible" type="number" min=0 value=0></input>
+          </div>
+          <button id="creation-button" class="form--submit form--submit__slim">Create</button>
+        </div>
+      </div>
+      <hr style="width: 20%; margin: 50px 40%;">
       <table class="assignments">
         <thead>
           <th>Name</th>
@@ -42,6 +58,31 @@
       const weighted = <%= weights !== null %>;
       const assignments = <%- JSON.stringify(assignments) %>;
       
+      $select = $("#creation select");
+      (weights.map(a => a.name) || assignments
+        .map(a => a.category)
+        .filter((e, i, arr) => arr.indexOf(e) === i)
+      ).forEach(name => $select.append($("<option></option>").attr("value", name).text(name)));
+      
+      let ctr = 1;
+      $("#creation-button").click(() => {
+        const earned = +$("#earned").val()
+        const possib = +$("#possible").val();
+        
+        assignments.unshift({
+          name: "Generated #" + ctr++,
+          category: $select.val(),
+          score: earned,
+          total: possib,
+          scoreType: "Raw Score",
+          notes: ""
+        });
+
+        buildAssignments();
+        if(weighted) recalcWeights();
+        remakeChart();
+      });
+
       const recalcWeights = () => {
         const lp = {};
 
@@ -62,6 +103,7 @@
 
       const buildAssignments = () => {
         const $root = $("#tbody");
+        $root.empty();
 
         assignments.forEach(assignment => {
           const { name, category, score, total } = assignment;
@@ -79,7 +121,7 @@
           `);
 
           $root.append($row);
-          $row.find("input").on("change", function() {
+          $row.find("input").on("input", function() {
             assignment.score = +$(this).val();
             
             if(weighted) recalcWeights();
@@ -146,7 +188,7 @@
       });
       const remakeChart = () => {
         const numberGrade = Math.floor(calculateTotal() * 100) / 100;
-        const letterGrade = "FFFFFFDCBA"[Math.floor(numberGrade / 10)];  
+        const letterGrade = numberGrade < 60? "F" : "FFFFFFDCBAA"[Math.floor(numberGrade / 10)];  
 
         $("#numberGrade").text(`${numberGrade.toFixed(2)}%`);
         $("#letterGrade").text(letterGrade);
