@@ -1,6 +1,5 @@
 @import "theme";
 
-
 .main{
   display: flex;
   justify-content: center;
@@ -27,11 +26,17 @@
   
   padding: 10px 20px;
   margin: 15px 25%;
+  width: 40%;
+  max-width: 750px;
+  
+  @media @mobile {
+    margin: 15px;
+    width: 100%;
+  }
+
   background-color: darken(@background-color, 5%);
   align-items: center;
   
-  width: 40%;
-  max-width: 750px;
 
   transition-duration: @animation-duration;
   cursor: pointer;
