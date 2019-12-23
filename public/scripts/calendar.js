@@ -4,7 +4,7 @@ const hash = date => {
   return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
 }
 
-const updateDates = async currentDate => {
+const updateDates = async () => {
   const date = new Date(currentDate);
 
   const month = date.toLocaleString('default', { month: 'long' });
@@ -46,6 +46,8 @@ const updateDates = async currentDate => {
     for(let j = 0; j < 7; j++){
       const $curr = $(`.calendar--cell[data-i=${i}][data-j=${j}]`);
 
+      $curr.data("date", date.getTime());
+
       const prefix = date.getDate() === 1 ? date.toLocaleString('default', { month: 'short' }): "";
       $curr.find(".cell--date").text(prefix + " " + date.getDate());
 
@@ -73,11 +75,13 @@ const updateDates = async currentDate => {
 const shiftMonth = delta => {
   currentDate.setMonth(currentDate.getMonth() + delta);
 
-  updateDates(currentDate);
+  updateDates();
 }
 
 const addTask = async (text, date) => {
   await $.post("/calendar/addTask", {text, date});
+
+  updateDates();
 }
 
 const markTask = async (id, completed) => {
@@ -85,5 +89,31 @@ const markTask = async (id, completed) => {
 }
 
 $(() => {
-  updateDates(currentDate);
+  updateDates();
+
+  $("body").click(() => $(".popup").remove());
+  $(".calendar--cell").click(function(e){
+    if($(".popup").remove().length !== 0) return;
+
+    if(e.target !== this) return;
+
+    const date = $(this).data("date");
+
+    $popup = $(Popup());
+
+    $popup.find("button").click(() => {
+      const text = $(this).find("textarea").val();
+
+      addTask(text, date);
+      $popup.remove();
+      
+      return false;
+    });
+
+    $popup.click(() => false);
+
+    $(this).append($popup);
+
+    return false;
+  });
 })
