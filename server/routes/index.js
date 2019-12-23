@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+
 const { getCourses, getCourseData } = require("../api.js");
 
 router.get("/", async (req, res, next) => {
@@ -18,8 +19,7 @@ router.get("/class/:id", async (req, res) => {
   res.render("class", { title: name, weights, assignments });
 });
 
-router.get("/calendar", async (req, res) => {
-  return res.render("calendar");
-});
+
+router.use("/calendar", require("./calendar"));
 
 module.exports = router;

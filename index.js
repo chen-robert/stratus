@@ -1,5 +1,8 @@
+require("dotenv").config();
+
 var express = require("express");
 var path = require("path");
+const db = require(__dirname + "/server/db");
 const cookieSession = require("cookie-session");
 
 const PORT = process.env.PORT || 3000;
