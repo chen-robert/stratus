@@ -59,10 +59,12 @@
       const assignments = <%- JSON.stringify(assignments) %>;
       
       $select = $("#creation select");
-      (weights.map(a => a.name) || assignments
+      let labels = weights.map(a => a.name);
+      if(labels.length === 0) labels = assignments
         .map(a => a.category)
         .filter((e, i, arr) => arr.indexOf(e) === i)
-      ).forEach(name => $select.append($("<option></option>").attr("value", name).text(name)));
+      
+      labels.forEach(name => $select.append($("<option></option>").attr("value", name).text(name)));
       
       let ctr = 1;
       $("#creation-button").click(() => {
