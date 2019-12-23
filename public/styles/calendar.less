@@ -10,6 +10,13 @@
 .calendar--title {
   text-align: center;
   font-size: 1.4em;
+  margin-bottom: 15px;
+  user-select: none;
+
+  & #calendar-title {
+    display: inline-block;
+    width: 200px;
+  }
 }
 
 .calendar--row {
@@ -29,7 +36,7 @@
 }
 
 .calendar--cell__faded {
-  color: #aaa;
+  color: #ccc;
 }
 
 .cell--date {
@@ -38,10 +45,13 @@
   margin-bottom: 0;
 }
 
-.tasks--task {
+.title--btn {
+  cursor: pointer;
 
+  &:hover {
+    color: gray;
+  }
 }
-
 .cell--tasks {
   padding: 5px;
 }

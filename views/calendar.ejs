@@ -16,7 +16,15 @@
     <%- include partials/nav %>
     <div class="main">
       <div class="calendar">
-        <p id="calendar-title" class="calendar--title">June, 2019</p>
+        <div class="calendar--title">
+          <a class="title--btn" onclick="shiftMonth(-1)">
+            <i class="icon mdi mdi-chevron-left"></i>
+          </a>
+          <span id="calendar-title">June, 2019</span>
+          <a class="title--btn" onclick="shiftMonth(-1)">
+            <i class="icon mdi mdi-chevron-right"></i>
+          </a>
+        </div>
         <% for(let i = 0; i < 5; i++) { %>
         <div class="calendar--row">
           <% for(let j = 0; j < 7; j++) { %>

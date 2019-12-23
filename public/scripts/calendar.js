@@ -1,16 +1,19 @@
+let currentDate = new Date();
+
 const updateDates = currentDate => {
-  const month = currentDate.toLocaleString('default', { month: 'long' });
-  const year = currentDate.getFullYear();
+  const date = new Date(currentDate);
+
+  const month = date.toLocaleString('default', { month: 'long' });
+  const year = date.getFullYear();
 
   $("#calendar-title").text(`${month}, ${year}`);
 
-  currentDate.setDate(1);
+  date.setDate(1);
 
-  const day = currentDate.getDay();
+  const day = date.getDay();
 
-  currentDate.setDate(1 - day);
+  date.setDate(1 - day);
 
-  console.log(currentDate);
 
   $(".calendar--cell").removeClass("calendar--cell__faded");
   
@@ -18,19 +21,26 @@ const updateDates = currentDate => {
     for(let j = 0; j < 7; j++){
       const $curr = $(`.calendar--cell[data-i=${i}][data-j=${j}]`);
 
-      const prefix = currentDate.getDate() === 1 ? currentDate.toLocaleString('default', { month: 'short' }): "";
-      $curr.find(".cell--date").text(prefix + " " + currentDate.getDate());
+      const prefix = date.getDate() === 1 ? date.toLocaleString('default', { month: 'short' }): "";
+      $curr.find(".cell--date").text(prefix + " " + date.getDate());
 
-      currentDate.setDate(currentDate.getDate() + 1);
-
-      if(currentDate.toLocaleString('default', { month: 'long' }) !== month) {
+      if(date.toLocaleString('default', { month: 'long' }) !== month) {
         $curr.addClass("calendar--cell__faded");
       }
+      
+      date.setDate(date.getDate() + 1);
     }
   }
+}
+
+const shiftMonth = delta => {
+  console.log(delta);
+  currentDate.setMonth(currentDate.getMonth() + delta);
   console.log(currentDate);
+
+  updateDates(currentDate);
 }
 
 $(() => {
-  updateDates(new Date());
+  updateDates(currentDate);
 })
