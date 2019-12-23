@@ -99,7 +99,10 @@
 
         weights.forEach(weight => {
           const data = lp[weight.name];
-          if(data) weight.current = data.score / data.total * weight.total;
+          if(data) {
+            if(data.total === 0) weight.current = 0;
+            else weight.current = data.score / data.total * weight.total;
+          }
         });
       }
 
@@ -124,7 +127,7 @@
 
           $root.append($row);
           $row.find("input").on("input", function() {
-            assignment.score = +$(this).val();
+            assignment.score = $(this).val() === ""? null: +$(this).val();
             
             if(weighted) recalcWeights();
             remakeChart();
