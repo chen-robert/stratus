@@ -1,0 +1,47 @@
+@border-color: #ccc;
+
+.calendar {
+  width: 100%;
+  padding: 75px;  
+  
+
+}
+
+.calendar--title {
+  text-align: center;
+  font-size: 1.4em;
+}
+
+.calendar--row {
+  display: flex;
+  border-bottom: 1px solid @border-color;
+  border-left: 1px solid @border-color;
+
+  &:nth-child(2) {
+    border-top: 1px solid @border-color;
+  }
+}
+
+.calendar--cell {
+  height: 150px;
+  flex: 1;
+  border-right: 1px solid @border-color;
+}
+
+.calendar--cell__faded {
+  color: #aaa;
+}
+
+.cell--date {
+  text-align: center;
+  font-size: .8em;
+  margin-bottom: 0;
+}
+
+.tasks--task {
+
+}
+
+.cell--tasks {
+  padding: 5px;
+}
