@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const url = process.env.MONGO_DB_URL || "mongodb://localhost/textbooks";
+const url = process.env.MONGO_DB_URL || "mongodb://localhost/stratus";
 
 mongoose.set('useCreateIndex', true);
 
