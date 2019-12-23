@@ -1,6 +1,10 @@
 let currentDate = new Date();
 
-const updateDates = currentDate => {
+const hash = date => {
+  return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
+}
+
+const updateDates = async currentDate => {
   const date = new Date(currentDate);
 
   const month = date.toLocaleString('default', { month: 'long' });
@@ -9,13 +13,34 @@ const updateDates = currentDate => {
   $("#calendar-title").text(`${month}, ${year}`);
 
   date.setDate(1);
-
   const day = date.getDay();
 
   date.setDate(1 - day);
+  date.setHours(0);
+  date.setMinutes(0);
+  date.setSeconds(0);
+
+  const startTime = date.getTime();
+  const endTime = startTime + 5 * 7 * 24 * 60 * 60* 1000;
+
+  const tasks = await $.get(`/calendar/list?start=${startTime}&end=${endTime}`);
+  const lp = {};
+  tasks.forEach(task => {
+    const date = new Date(task.date);
+
+    const key = hash(date);
+    if(!lp[key]) lp[key] = [];
+
+    $elem = $(Task(task.text, task.completed));
+    $elem.find("input").change(function(){
+      markTask(task._id, $(this).prop("checked"));
+    });
+    lp[key].push($elem);
+  });
 
 
   $(".calendar--cell").removeClass("calendar--cell__faded");
+  $(".calendar--cell").removeClass("calendar--cell__today");
   
   for(let i = 0; i < 5; i++){
     for(let j = 0; j < 7; j++){
@@ -27,6 +52,18 @@ const updateDates = currentDate => {
       if(date.toLocaleString('default', { month: 'long' }) !== month) {
         $curr.addClass("calendar--cell__faded");
       }
+
+      const key = hash(date);
+      if(!lp[key]) lp[key] = [];
+      $curr.find(".cell--tasks")
+        .empty()
+        .append(
+          lp[key]
+        );
+
+      if(key === hash(new Date())) {
+        $curr.addClass("calendar--cell__today");
+      }
       
       date.setDate(date.getDate() + 1);
     }
@@ -34,11 +71,17 @@ const updateDates = currentDate => {
 }
 
 const shiftMonth = delta => {
-  console.log(delta);
   currentDate.setMonth(currentDate.getMonth() + delta);
-  console.log(currentDate);
 
   updateDates(currentDate);
+}
+
+const addTask = async (text, date) => {
+  await $.post("/calendar/addTask", {text, date});
+}
+
+const markTask = async (id, completed) => {
+  await $.post("/calendar/markTask", {id, completed});
 }
 
 $(() => {

@@ -30,7 +30,7 @@ router.post("/markTask", async (req, res) => {
   res.end();
 });
 
-router.get("list", async (req, res) => {
+router.get("/list", async (req, res) => {
   const {start, end} = req.query;
 
   res.send(await db.getTasks(start, end));
