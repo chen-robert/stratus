@@ -18,4 +18,8 @@ router.get("/class/:id", async (req, res) => {
   res.render("class", { title: name, weights, assignments });
 });
 
+router.get("/calendar", async (req, res) => {
+  return res.render("calendar");
+});
+
 module.exports = router;
