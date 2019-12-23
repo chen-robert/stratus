@@ -14,21 +14,28 @@ db.once("open", () => {
 
 const Task = require(__dirname + "/models/task");
 module.exports = {
-  addTask: async ({text, date, completed}) => {
+  addTask: async ({uid, text, date, completed}) => {
     if(completed === undefined) completed = false;
 
-    const task = new Task({text, date, completed});
+    const task = new Task({uid, text, date, completed});
 
     await task.save();
   },
-  removeTask: async (id) => {
-    await Task.deleteOne({id});
+  removeTask: async (uid, id) => {
+    await Task.find({
+      uid,
+      _id: id
+    }).deleteOne()
   },
-  markTask: async (id, completed) => {
-    await Task.findByIdAndUpdate(id, {completed});
+  markTask: async (uid, id, completed) => {
+    await Task.findOneAndUpdate({
+      uid,
+      _id: id
+    }).update({completed});
   },
-  getTasks: async (start, end) => {
+  getTasks: async (uid, start, end) => {
     return await Task.find({
+      uid, 
       date: {
         $gte: start,
         $lte: end

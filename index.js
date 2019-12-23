@@ -27,7 +27,7 @@ app.use(require("less-middleware")(__dirname + "/public"));
 app.use(express.static(path.join(__dirname, "public")));
 
 const requireAuth = (req, res, next) => {
-  if (req.session.username) {
+  if (req.session.uid) {
     next();
   } else {
     req.session.error = "Login required";

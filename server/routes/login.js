@@ -15,8 +15,8 @@ router.get("/auto", async (req, res) => {
   const password = decrypt(req.session.creds.password);
 
   const { err, name, cookies } = await login({
-    username: username,
-    password: password
+    username,
+    password
   });
 
   if (err) {
@@ -25,6 +25,7 @@ router.get("/auto", async (req, res) => {
   }
   req.session.username = name;
   req.session.cookies = cookies;
+  req.session.uid = username;
 
   res.redirect("/");
 });
@@ -48,6 +49,7 @@ router.post("/", async (req, res) => {
   }
   req.session.username = name;
   req.session.cookies = cookies;
+  req.session.uid = req.body.username;
 
   res.redirect("/");
 });

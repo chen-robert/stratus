@@ -31,10 +31,17 @@ const updateDates = async () => {
     const key = hash(date);
     if(!lp[key]) lp[key] = [];
 
-    $elem = $(Task(task.text, task.completed));
+    const $elem = $(Task(task.text, task.completed));
     $elem.find("input").change(function(){
       markTask(task._id, $(this).prop("checked"));
     });
+
+    $elem.bind("contextmenu", () => {
+      removeTask(task._id);
+      $elem.remove();
+      return false;
+    });
+
     lp[key].push($elem);
   });
 
@@ -84,6 +91,10 @@ const addTask = async (text, date) => {
   updateDates();
 }
 
+const removeTask = async id => {
+  await $.post("/calendar/removeTask", {id});
+}
+
 const markTask = async (id, completed) => {
   await $.post("/calendar/markTask", {id, completed});
 }
@@ -93,7 +104,7 @@ $(() => {
 
   $("body").click(() => $(".popup").remove());
   $(".calendar--cell").click(function(e){
-    if($(".popup").remove().length !== 0) return;
+    $(".popup").remove();
 
     if(e.target !== this) return;
 
@@ -113,6 +124,7 @@ $(() => {
     $popup.click(() => false);
 
     $(this).append($popup);
+    $popup.find("textarea").focus()
 
     return false;
   });

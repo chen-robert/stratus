@@ -9,7 +9,12 @@ router.get("/", (req, res) => {
 router.post("/addTask", async (req, res) => {
   const {text, date} = req.body;
 
-  await db.addTask({text, date, completed: false});
+  await db.addTask({
+    text, 
+    date, 
+    completed: false,
+    uid: req.session.uid
+  });
 
   res.end();
 });
@@ -17,7 +22,7 @@ router.post("/addTask", async (req, res) => {
 router.post("/removeTask", async (req, res) => {
   const {id} = req.body;
 
-  await db.removeTask(id);
+  await db.removeTask(req.session.uid, id);
 
   res.end();
 });
@@ -25,7 +30,7 @@ router.post("/removeTask", async (req, res) => {
 router.post("/markTask", async (req, res) => {
   const {id, completed} = req.body;
 
-  await db.markTask(id, completed);
+  await db.markTask(req.session.uid, id, completed);
 
   res.end();
 });
@@ -33,7 +38,7 @@ router.post("/markTask", async (req, res) => {
 router.get("/list", async (req, res) => {
   const {start, end} = req.query;
 
-  res.send(await db.getTasks(start, end));
+  res.send(await db.getTasks(req.session.uid, start, end));
 })
 
 module.exports = router;
