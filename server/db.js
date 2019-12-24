@@ -28,7 +28,7 @@ module.exports = {
     }).deleteOne()
   },
   markTask: async (uid, id, completed) => {
-    await Task.findOneAndUpdate({
+    await Task.find({
       uid,
       _id: id
     }).update({completed});
