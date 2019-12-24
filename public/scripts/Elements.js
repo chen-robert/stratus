@@ -12,8 +12,6 @@ const Task = (title, checked) => `
 
 const Popup = () => `
 <div class="popup">
-  <textarea></textarea>
-  <br>
-  <button>Create</button>
+  <textarea rows="5" cols="30"></textarea>
 </div>
 `

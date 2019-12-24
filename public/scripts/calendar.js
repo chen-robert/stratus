@@ -31,7 +31,8 @@ const updateDates = async () => {
     const key = hash(date);
     if(!lp[key]) lp[key] = [];
 
-    const $elem = $(Task(task.text, task.completed));
+    const title = task.text.split("\n")[0];
+    const $elem = $(Task(title, task.completed));
     $elem.find("input").change(function(){
       markTask(task._id, $(this).prop("checked"));
     });
@@ -112,13 +113,13 @@ $(() => {
 
     $popup = $(Popup());
 
-    $popup.find("button").click(() => {
-      const text = $(this).find("textarea").val();
-
-      addTask(text, date);
-      $popup.remove();
-      
-      return false;
+    $popup.find("textarea").keydown(e => {
+      if(e.which === 13 && e.ctrlKey) {
+        const text = $popup.find("textarea").val();
+  
+        addTask(text, date);
+        $popup.remove();
+      }
     });
 
     $popup.click(() => false);

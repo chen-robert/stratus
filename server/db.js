@@ -31,7 +31,7 @@ module.exports = {
     await Task.find({
       uid,
       _id: id
-    }).update({completed});
+    }).updateOne({completed});
   },
   getTasks: async (uid, start, end) => {
     return await Task.find({
