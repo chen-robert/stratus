@@ -38,6 +38,8 @@ const updateDates = async () => {
     });
 
     $elem.bind("contextmenu", () => {
+      if(!confirm("Do you want to remove this task")) return false;
+
       removeTask(task._id);
       $elem.remove();
       return false;
@@ -113,14 +115,22 @@ $(() => {
 
     $popup = $(Popup());
 
+    const createTask = () => {
+      const text = $popup.find("textarea").val();
+
+      addTask(text, date);
+      $popup.remove();
+    }
+
     $popup.find("textarea").keydown(e => {
       if(e.which === 13 && e.ctrlKey) {
-        const text = $popup.find("textarea").val();
-  
-        addTask(text, date);
-        $popup.remove();
+        createTask();
       }
     });
+
+    $popup.find("button").click(() => {
+      createTask();
+    })
 
     $popup.click(() => false);
 
