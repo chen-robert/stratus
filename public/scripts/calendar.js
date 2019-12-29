@@ -45,6 +45,10 @@ const updateDates = async () => {
       return false;
     });
 
+    $elem.hover(() => {
+      $("#edit").find("textarea").val(task.text);
+    });
+
     lp[key].push($elem);
   });
 
