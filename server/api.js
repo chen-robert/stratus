@@ -188,4 +188,18 @@ const getCourseData = (cookies, id) => {
     });
 };
 
-module.exports = { login, getCourses, getCourseData };
+const getTasks = () => {
+  const date = new Date();
+  const pad = date => ("" + date).padStart(2, "0")
+  const fmt = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+  return request.post({
+    url: `http://bsd405.herokuapp.com/today`,
+    form: {
+      date: fmt
+    },
+    followAllRedirects: true,
+  })
+    .then(data => JSON.parse(data))
+}
+
+module.exports = { login, getCourses, getCourseData, getTasks };

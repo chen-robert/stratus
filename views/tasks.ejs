@@ -1,0 +1,16 @@
+<html>
+<body>
+  <h1 class="item">Schedule</h1>
+  <% Object.keys(tasks).forEach(key => { %>
+    <p class="item"><%= key %>: <%= tasks[key] %></p>
+  <% }) %>
+
+<style>
+  .item {
+    padding: 5px;
+    margin: 0;
+    text-align: center;
+  }
+</style>
+</body>
+</html>

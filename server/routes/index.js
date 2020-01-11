@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getCourses, getCourseData } = require("../api.js");
+const { getCourses, getCourseData, getTasks } = require("../api.js");
 
 router.get("/", async (req, res, next) => {
   const { courses } = await getCourses(req.session.cookies);
@@ -21,5 +21,14 @@ router.get("/class/:id", async (req, res) => {
 
 
 router.use("/calendar", require("./calendar"));
+
+router.get("/tasks", (req, res) => {
+  getTasks()
+    .then(data => {
+      res.render("tasks", {
+        tasks: data
+      });
+    });
+});
 
 module.exports = router;
