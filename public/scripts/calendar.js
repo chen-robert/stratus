@@ -79,10 +79,12 @@ const updateDates = async () => {
 
       if(key === hash(new Date())) {
         $curr.addClass("calendar--cell__today");
-        $curr[0].scrollIntoView({
-          behavior: "smooth"
-        });
-        console.log($curr[0])
+
+        if($(document).width() < 750) {
+          $curr[0].scrollIntoView({
+            behavior: "smooth"
+          });
+        }
       }
       
       date.setDate(date.getDate() + 1);
