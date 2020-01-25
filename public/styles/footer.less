@@ -1,0 +1,32 @@
+@import "theme";
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  padding: 15px;
+  
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+
+  @media @mobile {
+    background-color: #f3f3f3;
+    border-top: 1px solid #888;
+  }
+}
+
+.footer--icon {
+  height: 36px;
+  & img {
+    transition-duration: 50ms;
+    width: 32px;
+    height: 32px;
+  }
+
+  &:hover {
+    & img {
+      width: 36px;
+      height: 36px;
+    }
+  }
+}
