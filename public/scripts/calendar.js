@@ -1,4 +1,5 @@
 let currentDate = new Date();
+let scrolled = false;
 
 const hash = date => {
   return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
@@ -80,7 +81,8 @@ const updateDates = async () => {
       if(key === hash(new Date())) {
         $curr.addClass("calendar--cell__today");
 
-        if($(document).width() < 750) {
+        if(!scrolled && $(document).width() < 750) {
+          scrolled = true;
           $curr[0].scrollIntoView({
             behavior: "smooth"
           });
