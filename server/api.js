@@ -54,54 +54,130 @@ const login = ({ username, password }) => {
     });
 };
 
-const getCourses = cookies => {
-  const jar = loadJar(cookies);
+const getCourses = (cookies, name="Semester 1 Final") => {
+  if(name === undefined) return getDefaultCourses(cookies);
 
+  return getPeriodHTML(cookies, name)
+    .then($ => {
+      return parseCourseData($);
+    });
+}
+
+const getPeriodHTML = (cookies, name) => {
+  const jar = loadJar(cookies);
+  return getGradingPeriods(cookies)
+    .then(periods => {
+      const curr = periods.filter(per => name === per.Name)[0];
+      
+      return request.post({
+        url: `${apiBase}/service/PXP2Communication.asmx/LoadControl`,
+        body: {
+          request: {
+            control: "Gradebook_SchoolClasses",
+            parameters: {
+              schoolID: curr.schoolID,
+              OrgYearGU: curr.OrgYearGU,
+              gradePeriodGU: curr.GU,
+              GradingPeriodGroup: curr.GroupName,
+              AGU: 0
+            }
+          }
+        },
+        json: true,
+        jar
+      });
+    })
+    .then(data => {
+      return cheerio.load(data.d.Data.html);
+    })
+}
+
+const getGradingPeriods = cookies => {
+  return getInfo(cookies)
+    .then(data => {
+      return data.GradingPeriods;
+    });
+}
+
+const getInfo = cookies => {
+  const jar = loadJar(cookies);
   return request.get({
     url: `${apiBase}/PXP2_Gradebook.aspx?AGU=0`,
     transform: body => cheerio.load(body),
     jar
   })
     .then($ => {
-      const courses = $(".course-title");
+      const txt = $.html();
 
-      const cData = courses.map((i, elem) => {
-        const $elem = $(elem);
-        const $root = $elem.parent().parent();
-        const $gradeRoot = $root.next();
+      const start = "PXP.GBFocusData = ";
+      const end = ";";
 
-        const focusData = JSON.parse($elem.attr("data-focus")).FocusArgs;
+      const startI = txt.indexOf(start) + start.length;
+      const endI = txt.indexOf(end, startI);
 
-        const id = focusData.classID;
-        const teacher = $root.find(".teacher.hide-for-screen").text();
-        const name = $elem.text().split(":")[1].trim();
-        const numberGrade = $gradeRoot.find(".score").text();
-        const letterGrade = $gradeRoot.find(".mark").text();
-
-        return {
-          id,
-          teacher,
-          name,
-          numberGrade,
-          letterGrade
-        };
-      }).get();
-
-      return {
-        courses: cData
-      };
+      return JSON.parse(txt.substring(startI, endI));
     });
-};
+}
 
-const getCourseData = (cookies, id) => {
+const getDefaultCourses = cookies => {
   const jar = loadJar(cookies);
 
-  const ret = {};
   return request.get({
     url: `${apiBase}/PXP2_Gradebook.aspx?AGU=0`,
     transform: body => cheerio.load(body),
     jar
   })
+    .then($ => parseCourseData($));
+};
+
+const parseCourseData = $ => {
+  const courses = $(".course-title");
+
+  const cData = courses.map((i, elem) => {
+    const $elem = $(elem);
+    const $root = $elem.parent().parent();
+    const $gradeRoot = $root.next();
+
+    const focusData = JSON.parse($elem.attr("data-focus")).FocusArgs;
+
+    const id = focusData.classID;
+    const teacher = $root.find(".teacher.hide-for-screen").text();
+    const name = $elem.text().split(":")[1].trim();
+    const numberGrade = $gradeRoot.find(".score").text();
+    const letterGrade = $gradeRoot.find(".mark").text();
+
+    return {
+      id,
+      teacher,
+      name,
+      numberGrade,
+      letterGrade
+    };
+  }).get();
+
+  return {
+    courses: cData
+  };
+}
+
+const getCourseData = (cookies, id, name="Semester 1 Final") => {
+  const jar = loadJar(cookies);
+
+  const ret = {};
+
+  let base;
+
+  if(name === undefined) {
+    base = request.get({
+      url: `${apiBase}/PXP2_Gradebook.aspx?AGU=0`,
+      transform: body => cheerio.load(body),
+      jar
+    });
+  } else {
+    base = getPeriodHTML(cookies, name);
+  }
+
+  return base
     .then($ => {
       const courses = $(".course-title");
 
@@ -152,7 +228,7 @@ const getCourseData = (cookies, id) => {
       const endStr = "}],";
       const dataStart = txt.indexOf(startStr) + startStr.length;
       const dataEnd = txt.indexOf(endStr, dataStart);
-
+      
       const assignments = JSON.parse(txt.substring(dataStart, dataEnd) + "}]")
         .map(assignmentData => {
           let score, total;
