@@ -60,6 +60,13 @@ const getCourses = (cookies, name="Semester 1 Final") => {
   return getPeriodHTML(cookies, name)
     .then($ => {
       return parseCourseData($);
+    })
+    .catch(err => {
+      console.log(err);
+
+      return {
+        courses: []
+      }
     });
 }
 
