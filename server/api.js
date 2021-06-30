@@ -54,7 +54,7 @@ const login = ({ username, password }) => {
     });
 };
 
-const getCourses = (cookies, name="Semester 1 Final") => {
+const getCourses = (cookies, name) => {
   if(name === undefined) return getDefaultCourses(cookies);
 
   return getPeriodHTML(cookies, name)
@@ -167,7 +167,7 @@ const parseCourseData = $ => {
   };
 }
 
-const getCourseData = (cookies, id, name="Semester 1 Final") => {
+const getCourseData = (cookies, id, name) => {
   const jar = loadJar(cookies);
 
   const ret = {};
@@ -240,6 +240,11 @@ const getCourseData = (cookies, id, name="Semester 1 Final") => {
         .map(assignmentData => {
           let score, total;
 
+          if (assignmentData.GBPoints === undefined) {
+            console.log(assignmentData);
+            return undefined;
+          }
+
           if (assignmentData.GBPoints.includes("Points Possible")) {
             score = null;
             total = +assignmentData.GBPoints.split(" ")[0];
@@ -255,7 +260,8 @@ const getCourseData = (cookies, id, name="Semester 1 Final") => {
             scoreType: assignmentData.GBScoreType,
             notes: assignmentData.GBNotes
           };
-        });
+        })
+        .filter(a => a !== undefined);
 
       return {
         name: ret.name,

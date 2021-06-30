@@ -3,8 +3,12 @@ const router = express.Router();
 
 const { getCourses, getCourseData, getTasks } = require("../api.js");
 
+
+const NAME = "Semester 2 FInal"
 router.get("/", async (req, res, next) => {
-  const { courses } = await getCourses(req.session.cookies);
+  const { courses } = await getCourses(req.session.cookies, NAME);
+
+  console.log(req.session.username);
 
   if (courses.length === 0) return res.redirect("/login/auto");
 
@@ -12,7 +16,7 @@ router.get("/", async (req, res, next) => {
 });
 
 router.get("/class/:id", async (req, res) => {
-  const { err, name, weights, assignments } = await getCourseData(req.session.cookies, req.params.id);
+  const { err, name, weights, assignments } = await getCourseData(req.session.cookies, req.params.id, NAME);
 
   if (err) return res.redirect("/login/auto");
 
