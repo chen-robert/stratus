@@ -2,7 +2,7 @@
 <html>
   <head>
     <title><%= title %></title>
-    <%- include partials/header %>
+    <%- include('partials/header') %>
     <link rel='stylesheet' href='/styles/class.css' />
     <link rel='stylesheet' href='/styles/main.css' />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
@@ -13,7 +13,7 @@
     </script>
   </head>
   <body>
-    <%- include partials/nav %>
+    <%- include('partials/nav') %>
     <div class="main">
       <h1 class="main--welcome"><%= title %></h1>
       <div class="main--header">

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><% include partials/logo %></title>
-    <%- include partials/header %>
+    <title><% include('partials/logo') %></title>
+    <%- include('partials/header') %>
     <link rel='stylesheet' href='/styles/main.css' />
     <link rel='stylesheet' href='/styles/calendar.css' />
     <script
@@ -13,7 +13,7 @@
     <link href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" rel="stylesheet">
   </head>
   <body>
-    <%- include partials/nav %>
+    <%- include('partials/nav') %>
     <div class="main">
       <div class="calendar">
         <div class="calendar--title">

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><% include partials/logo %></title>
-    <%- include partials/header %>
+    <title><% include('partials/logo') %></title>
+    <%- include('partials/header') %>
     <link rel='stylesheet' href='/styles/main.css' />
   </head>
   <body>
-    <%- include partials/nav %>
+    <%- include('partials/nav') %>
     <div class="main">
       <h1 class="main--welcome">Welcome, <%= name %></h1>
       <div class="class-list">
@@ -27,6 +27,6 @@
         <% } %>
       </div>
     </div>
-    <%- include partials/footer %>
+    <%- include('partials/footer') %>
   </body>
 </html>
